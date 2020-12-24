@@ -137,6 +137,7 @@ if __name__ == "__main__":
             TopicPreviewLabel.config(text="Folder preview will show here")
         elif set(TopicEntry.get()).intersection(set(["\\","/",":","?","\"","<",">","|"," "])) or len(TopicEntry.get()) >= 200:
             TopicPreviewLabel.config(text="Invalid Topic")
+            topic=""
         else:
             if locationToWrite != "":
                 TopicPreviewLabel.config(text=f"{locationToWrite}/{TopicEntry.get()} <month> <year>")

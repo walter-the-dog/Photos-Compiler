@@ -53,3 +53,5 @@ Images Path = D:/iPhoneSharedFolder
 * Data loss is a very real possiblity so i recommend backing up before letting my program sort your photos
 
 * This program has only been designed to handle photos taken within the same month. I might add support for multiple months/years if a demand appears.
+
+* I dont know how to make my program handle spaces in file paths. Feel free to open up a pull request if you know how to implement this
