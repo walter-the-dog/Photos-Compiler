@@ -20,7 +20,8 @@ Images Path = D:/iPhoneSharedFolder
 ## Table Of Contents
 
 * [Dependencies](#Dependencies)
-
+* [Requirements](#Requirements)
+* [Important Info](#Information)
 ***
 ## Requirements
 * A working [Vanilla Python 3.7.4](https://www.python.org/downloads/release/python-374/) installation.
@@ -30,7 +31,7 @@ Images Path = D:/iPhoneSharedFolder
 * PC running windows 10 OS.
 
 ***
-## Important Information
+## Information
 
 * This program is designed to handle images that has been ideally shot by an Apple Device.
 
