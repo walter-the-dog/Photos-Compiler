@@ -1,12 +1,9 @@
 import os
 import pathlib
 import datetime
-import subprocess
 import shutil
 from tkinter import filedialog
-from PIL import Image
 import tkinter
-import time
 from tkinter import messagebox
 import multiprocessing
 from tkinter import ttk
