@@ -14,12 +14,22 @@ def StartSort(locationToWrite,direct,topic):
         messagebox.showerror("Something went wrong!","Something went wrong..\n1.Check whether the paths and topics arent null\n2.Check whether ther results path and image path isnt the same.")
         tW.destroy()
         return
+    if list(direct)[len(direct)-1] in ["\\","/"]:
+        direct = list(direct)
+        del direct[len(direct)-1]
+        direct = ''.join(x for x in direct)
+    if list(locationToWrite)[len(locationToWrite)-1] in ["\\","/"]:
+        locationToWrite = list(locationToWrite)
+        del locationToWrite[len(locationToWrite)-1]
+        locationToWrite = ''.join(x for x in locationToWrite)
+    
+
     fetched = os.listdir(direct)
     fetched.sort()
     listOfFiles = []
     for x in fetched:
         try:
-            newx = x.replace(direct,"")
+            newx = os.path.basename(x)
             if " " in list(newx):
                 convertx = x.replace(" ","_")
                 os.rename(direct+"\\"+x,direct+"\\"+convertx)
@@ -40,6 +50,8 @@ def StartSort(locationToWrite,direct,topic):
     MonthInterpret = ["January","February","March","April","May","June","July","August","September","October","November","December"]
     listOfOldProcessed = []
     YoungestYear = datetime.date.today().year
+    uniqueMonths = []
+    uniqueYears = []
     for x in listOfFiles:
         if x[-3:] in ["jpg","JPG","PNG","png"]:
             ret = os.popen("exiftool -time:all "+x)
@@ -81,31 +93,59 @@ def StartSort(locationToWrite,direct,topic):
                 listOfFiles = [y for y in listOfFiles if y!=x]
                 continue
         listOfOldProcessed.append(ProcessedDate)
-        if (ProcessedDate.day,ProcessedDate.weekday()) not in uniqueDays:
-            uniqueDays.append((ProcessedDate.day,ProcessedDate.weekday()))
-        if ProcessedDate.month < YoungestMonth:
+        if (ProcessedDate.day,ProcessedDate.weekday(),ProcessedDate.month,ProcessedDate.year) not in uniqueDays:
+            uniqueDays.append((ProcessedDate.day,ProcessedDate.weekday(),ProcessedDate.month,ProcessedDate.year))
+        if ProcessedDate.month < YoungestMonth and ProcessedDate.year<=YoungestYear:
             YoungestMonth = ProcessedDate.month
         if ProcessedDate.year<YoungestYear:
             YoungestYear = ProcessedDate.year
+        if (ProcessedDate.month,ProcessedDate.year) not in uniqueMonths:
+            uniqueMonths.append((ProcessedDate.month,ProcessedDate.year))
+        if ProcessedDate.year not in uniqueYears:
+            uniqueYears.append(ProcessedDate.year)
     YoungestYear = str(YoungestYear)
     TrueMonth = MonthInterpret[YoungestMonth-1]
     try:
-        os.mkdir(locationToWrite+"\\"+topic+" "+TrueMonth+" "+str(YoungestYear))
+        os.mkdir(locationToWrite+"\\"+topic+" "+TrueMonth+" "+str(YoungestYear)+"\\")
     except FileExistsError:
-        shutil.rmtree(locationToWrite+"\\"+topic+" "+TrueMonth+" "+YoungestYear)
-        os.mkdir(locationToWrite+"\\"+topic+" "+TrueMonth+" "+YoungestYear)
+        pass
     basePath = locationToWrite+"\\"+topic+" "+TrueMonth+" "+YoungestYear
-    for day,weekID in uniqueDays:
-        weekDay = weekDayInterpret[weekID]
+    listOfYearsPaths = []
+    for x in uniqueYears:
         try:
-            os.mkdir(basePath+"\\"+str(day)+","+weekDay)
-        except FileExistsError:
-            shutil.rmtree(basePath+"\\"+str(day)+","+weekDay)
-            os.mkdir(basePath+"\\"+str(day)+","+weekDay)
+            os.mkdir(basePath+"\\"+str(x))
+        except: 
+            pass
+        listOfYearsPaths.append((basePath+"\\"+str(x),x))
+    listOfMonthsPaths = []
+    for x in uniqueMonths:
+        month,year = x
+        for y in listOfYearsPaths:
+            path,_year = y
+            if int(_year) == year:
+                try:
+                    os.mkdir(path+"\\"+str(year)+" "+MonthInterpret[month-1])
+                except FileExistsError:
+                    pass
+                listOfMonthsPaths.append((path+"\\"+str(year)+" "+MonthInterpret[month-1],year,month))
+    listOfUniqueDaysPaths = []
+    for x in uniqueDays:
+        day,weekID,month,year = x
+        for y in listOfMonthsPaths:
+            path,_year,_month = y
+            if int(_year) == year and int(_month) == month:
+                try:
+                    os.mkdir(path+"\\"+str(day)+" "+weekDayInterpret[weekID])
+                except FileExistsError:
+                    pass
+                listOfUniqueDaysPaths.append((path+"\\"+str(day)+" "+weekDayInterpret[weekID],year,month,day))
     i = 0
     while i<len(listOfFiles):
-        fileName = listOfFiles[i].replace(direct,"")
-        os.rename(listOfFiles[i],basePath+"\\"+str(listOfOldProcessed[i].day)+","+weekDayInterpret[listOfOldProcessed[i].weekday()]+"\\"+fileName)
+        fileName = os.path.basename(listOfFiles[i])
+        for x in listOfUniqueDaysPaths:
+            basePath,_year,_month,_day = x
+            if int(_year) == listOfOldProcessed[i].year and _month == listOfOldProcessed[i].month and _day == listOfOldProcessed[i].day:
+                shutil.move(listOfFiles[i],basePath+"\\"+fileName)
         i+=1
     messagebox.showinfo("Processing completed","Your files have been sorted!")
     os.system("start "+locationToWrite)
