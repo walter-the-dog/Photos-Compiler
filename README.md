@@ -9,7 +9,7 @@ A python script that utilizes exiftool to sort any given images in to folders an
 
 Inputs given:
 
-Topic = Trip to Tasmania
+Topic = Trip_To_South_Australia
 
 Results Path = D:/Photos
 
