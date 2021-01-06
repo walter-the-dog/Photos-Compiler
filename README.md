@@ -18,8 +18,6 @@ Images Path = D:/iPhoneSharedFolder
 
 ***
 ## Table Of Contents
-
-* [Dependencies](#Dependencies)
 * [Requirements](#Requirements)
 * [Important Info](#Information)
 ***
